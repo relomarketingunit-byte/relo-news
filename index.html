@@ -7,9 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
 <style>
-html,body{margin:0;padding:0}
+html,body{margin:0;padding:0;height:100%;overflow:hidden}
 body{background:#F1F0EB;font-family:'Inter','Noto Sans JP','Hiragino Sans','Yu Gothic',system-ui,sans-serif}
-.stage{position:relative;width:100%;overflow:hidden}
+.stage{position:fixed;inset:0;overflow:hidden;background:#F1F0EB}
 .stage .frame{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
@@ -408,10 +408,18 @@ a{color:inherit}
 </div>
 </div></div>
 <script>
-/* 1600×900のデザインを、画面の横幅に合わせて拡大・縮小して表示します */
+/* 1600×900のデザインを、画面の幅と高さの両方に収まるように拡大・縮小し、中央に表示します(スクロールなし) */
 (function(){
   var stage=document.getElementById('stage'),frame=document.getElementById('frame');
-  function fit(){var s=stage.clientWidth/1600;frame.style.transform='scale('+s+')';stage.style.height=(900*s)+'px';}
+  function fit(){
+    var w=stage.clientWidth,h=stage.clientHeight;
+    var s=Math.min(w/1600,h/900);
+    var x=(w-1600*s)/2,y=(h-900*s)/2;
+    frame.style.transform='translate('+x+'px,'+y+'px) scale('+s+')';
+    /* 左右の余白にも上部の白いバーと二重線を延ばし、画面幅いっぱいに見せる */
+    var top=y+57*s;
+    stage.style.background='linear-gradient(to bottom,#fff 0,#fff '+top+'px,#0E2238 '+top+'px,#0E2238 '+(top+1)+'px,#fff '+(top+1)+'px,#fff '+(top+3*s+1)+'px,#0E2238 '+(top+3*s+1)+'px,#0E2238 '+(top+3*s+2)+'px,#F1F0EB '+(top+3*s+2)+'px)';
+  }
   window.addEventListener('resize',fit);fit();
 })();
 </script>
